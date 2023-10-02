@@ -1,0 +1,185 @@
+---
+title: "Tugas Pertemuan 5"
+author: "Muhamad Fawaz Zidan (G1401211051)"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r}
+library(ggplot2)
+library(tsibble)
+library(tseries)
+library(MASS)
+```
+
+
+# Input data
+
+```{r}
+library(readxl)
+data_suhu<- read_excel("C:/Users/ASUS/OneDrive/Kuliah/Smt 5/MPDW/Data MPDW.xlsx",sheet=3)
+View(data_suhu)
+```
+
+# Data FULL
+
+### Ubah data ke ts
+
+```{r}
+data_suhu.ts <- ts(data_suhu$`Suhu`)
+```
+
+### Membuat plot time series
+
+```{r}
+ts.plot(data_suhu.ts, xlab="Periode", ylab="Suhu", 
+        main = "Time Series Plot")
+points(data_suhu.ts)
+```
+
+### Plot ACF
+
+```{r}
+acf(data_suhu.ts)
+```
+
+Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut cenderung *tails off* dan membentuk gelombang sinus.
+
+### Uji ADF
+
+```{r}
+tseries::adf.test(data_suhu.ts)
+```
+
+$H_0$ : Data tidak stasioner dalam rataan
+
+$H_1$ : Data stasioner dalam rataan
+
+Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.01 yang lebih kecil dari taraf nyata 5% sehingga tolak $H_0$ dan menandakan bahwa data stasioner dalam rataan. Hal ini sesuai dengan hasil eksplorasi menggunakan plot time series dan plot ACF.
+
+### Plot Box-Cox
+
+```{r}
+index <- seq(2:251)
+bc = boxcox(data_suhu.ts~index, lambda = seq(0,4,by=0.01))
+#Nilai Rounded Lambda
+lambda <- bc$x[which.max(bc$y)]
+lambda
+#SK
+bc$x[bc$y > max(bc$y) - 1/2 * qchisq(.95,1)]
+```
+
+Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **0** dan pada selang kepercayaan 95% nilai memiliki batas bawah **0.00** dan batas atas **3.83**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data bangkitan stasioner dalam ragam.
+
+Kesimpulan: Maka data tersebut stasioner dalam rataan dan ragam
+
+# Partisi data
+
+# Bagian 1
+
+```{r}
+data_suhu.ts1 <- data_suhu$`Suhu`[2:125] |> ts()
+mean(data_suhu.ts1)
+var(data_suhu.ts1)
+```
+
+### Membuat plot time series
+
+```{r}
+ts.plot(data_suhu.ts1, xlab="Periode", ylab="Suhu", 
+        main = "Time Series Plot")
+points(data_suhu.ts1)
+```
+
+### Plot ACF
+
+```{r}
+acf(data_suhu.ts1)
+```
+
+Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut cenderung *tails off* dan membentuk gelombang sinus.
+
+### Uji ADF
+
+```{r}
+tseries::adf.test(data_suhu.ts1)
+```
+
+$H_0$ : Data tidak stasioner dalam rataan
+
+$H_1$ : Data stasioner dalam rataan
+
+Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.01 yang lebih kecil dari taraf nyata 5% sehingga tolak $H_0$ dan menandakan bahwa data stasioner dalam rataan. Hal ini sesuai dengan hasil eksplorasi menggunakan plot time series dan plot ACF.
+
+### Plot Box-Cox
+
+```{r}
+index1 <- seq(2:125)
+bc1 = boxcox(data_suhu.ts1~index1, lambda = seq(0,4,by=0.01))
+#Nilai Rounded Lambda
+lambda1 <- bc1$x[which.max(bc1$y)]
+lambda1
+#SK
+bc1$x[bc1$y > max(bc1$y) - 1/2 * qchisq(.95,1)]
+```
+
+Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **4** dan pada selang kepercayaan 95% nilai memiliki batas bawah **0.00** dan batas atas **4.00**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data bangkitan stasioner dalam ragam.
+
+Kesimpulan partisi 1: Maka data tersebut stasioner dalam rataan dan ragam
+
+# Bagian 2
+
+```{r}
+data_suhu.ts2 <- data_suhu$`Suhu`[126:250] |> ts()
+mean(data_suhu.ts2)
+var(data_suhu.ts2)
+```
+
+### Membuat plot time series
+
+```{r}
+ts.plot(data_suhu.ts2, xlab="Periode", ylab="Suhu", 
+        main = "Time Series Plot")
+points(data_suhu.ts2)
+```
+
+### Plot ACF
+
+```{r}
+acf(data_suhu.ts2)
+```
+
+Berdasarkan plot ACF, terlihat bahwa plot ACF pada data tersebut cenderung *tails off* dan membentuk gelombang sinus.
+
+### Uji ADF
+
+```{r}
+tseries::adf.test(data_suhu.ts2)
+```
+
+$H_0$ : Data tidak stasioner dalam rataan
+
+$H_1$ : Data stasioner dalam rataan
+
+Berdasarkan uji ADF tersebut, didapat *p-value* sebesar 0.3 yang lebih kecil dari taraf nyata 5% sehingga terima $H_0$ dan menandakan bahwa data tidak stasioner dalam rataan. Hal ini sesuai dengan hasil eksplorasi menggunakan plot time series dan plot ACF.
+
+### Plot Box-Cox
+
+```{r}
+index2 <- seq(126:250)
+bc2 = boxcox(data_suhu.ts2~index2, lambda = seq(0,4,by=0.01))
+#Nilai Rounded Lambda
+lambda2 <- bc2$x[which.max(bc2$y)]
+lambda2
+#SK
+bc2$x[bc2$y > max(bc2$y) - 1/2 * qchisq(.95,1)]
+```
+
+Gambar di atas menunjukkan nilai *rounded value* ($\lambda$) optimum sebesar **0** dan pada selang kepercayaan 95% nilai memiliki batas bawah **0.00** dan batas atas **4.00**. Selang tersebut memuat nilai satu sehingga dapat dikatakan bahwa data bangkitan stasioner dalam ragam.
+
+Kesimpulan partisi 2: Maka data tersebut stasioner dalam rataan dan ragam
