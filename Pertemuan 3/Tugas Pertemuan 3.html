@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Muhamad Fawaz Zidan G1401211051" />
+  <title>Tugas Individu 3</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Tugas Individu 3</h1>
+<p class="author">Muhamad Fawaz Zidan G1401211051</p>
+</header>
+<pre class="{r}"><code>library(dLagM)
+library(dynlm)
+library(MLmetrics)
+library(lmtest)
+library(readxl)</code></pre>
+<h1 id="input-data">Input data</h1>
+<pre class="{r}"><code>data &lt;- read_excel(&quot;C:/Users/ASUS/OneDrive/Kuliah/Smt 5/MPDW/Pertemuan 3/Data Repsol.xlsx&quot;,sheet=4)
+View(data)</code></pre>
+<h1 id="pembagian-data-dan-data-time-series">Pembagian data dan data
+time series</h1>
+<pre class="{r}"><code>train &lt;- data[1:168,]
+test &lt;- data[169:210,]
+
+data.ts &lt;- ts(data)
+train.ts &lt;- ts(train)
+test.ts &lt;- ts(test)</code></pre>
+<h1 id="model-koyck">1. Model Koyck</h1>
+<pre class="{r}"><code>model.koyck &lt;- koyckDlm(x = train$High, y = train$Low, intercept = TRUE)
+summary(model.koyck)
+AIC(model.koyck)
+BIC(model.koyck)</code></pre>
+<p>Dari hasil tersebut, didapat bahwa intercept , peubah <span
+class="math inline"><em>x</em><sub><em>t</em></sub></span> dan <span
+class="math inline"><em>y</em><sub><em>t</em> − 1</sub></span> memiliki
+nilai <span
+class="math inline"><em>P</em> − <em>V</em><em>a</em><em>l</em><em>u</em><em>e</em> &lt; 0.05</span>.
+Hal ini menunjukkan bahwa intercept, peubah <span
+class="math inline"><em>x</em><sub><em>t</em></sub></span> dan <span
+class="math inline"><em>y</em><sub><em>t</em> − 1</sub></span>
+berpengaruh signifikan terhadap <span
+class="math inline"><em>y</em><sub><em>t</em></sub></span>. Adapun model
+keseluruhannya adalah sebagai berikut <span class="math display">$$
+\hat{Y_t}= 0.2076+0.4516X_t+ 0.5162Y_{t-1}
+$$</span><br />
+</p>
+<h3 id="peramalan-dan-akurasi-model-koyck">Peramalan dan akurasi model
+koyck</h3>
+<pre class="{r}"><code># peramalan 42 periode kedepan
+frc.koyck &lt;- forecast(model = model.koyck, x=test$High, h=42)
+frc.koyck
+#akurasi data test
+mape.koyck &lt;- MAPE(frc.koyck$forecasts, test$Low)
+mape.koyck
+#akurasi data training
+GoF(model.koyck)</code></pre>
+<h1 id="model-distributed-lag">2. Model Distributed Lag</h1>
+<h3 id="dengan-lag-3">dengan lag 3</h3>
+<pre class="{r}"><code>model.dl &lt;- dlm(x = train$High, y = train$Low, q=3)
+summary(model.dl)
+AIC(model.dl)
+BIC(model.dl)</code></pre>
+<p>Dari hasil diatas, didapat bahwa <span
+class="math inline"><em>P</em> − <em>v</em><em>a</em><em>l</em><em>u</em><em>e</em></span>
+dari intercept, <span
+class="math inline"><em>x</em><sub><em>t</em></sub></span> dan <span
+class="math inline"><em>x</em><sub><em>t</em> − 1</sub> &lt; 0.05</span>.
+Hal ini menunjukkan bahwa intercept, <span
+class="math inline"><em>x</em><sub><em>t</em></sub></span> dan <span
+class="math inline"><em>x</em><sub><em>t</em> − 1</sub></span>
+berpengaruh signifikan terhadap <span
+class="math inline"><em>y</em><sub><em>t</em></sub></span>. Adapun model
+keseluruhan yang terbentuk adalah sebagai berikut</p>
+<p><span class="math display">$$
+\hat{Y_t}=0.116455+0.964288X_t+0.085417X_{t-1}-0.086350X_{t-2}-0.003113X_{t-3}
+$$</span></p>
+<h3 id="peramalan-dan-akurasi-model-distributed-lag-lag3">Peramalan dan
+akurasi model Distributed Lag (lag=3)</h3>
+<pre class="{r}"><code># peramalan 42 periode kedepan
+frc.dl &lt;- forecast(model = model.dl, x=test$High, h=42)
+frc.dl
+#akurasi data test
+mape.dl &lt;- MAPE(frc.dl$forecasts, test$Low)
+mape.dl
+#akurasi data training
+GoF(model.dl)</code></pre>
+<h3 id="dengan-lag-optimmum">dengan lag Optimmum</h3>
+<pre class="{r}"><code># cari lag optimum
+finiteDLMauto(formula =Low ~ High,
+              data = data.frame(train), q.min = 1, q.max = 6,
+              model.type = &quot;dlm&quot;, error.type = &quot;AIC&quot;, trace = FALSE)</code></pre>
+<p>Berdasarkan output tersebut, lag optimum didapatkan ketika lag=1.
+Selanjutnya dilakukan pemodelan untuk lag=1</p>
+<h3 id="dengan-lag-optimum-lag1">Dengan lag optimum (lag=1)</h3>
+<pre class="{r}"><code>model.dl.opt &lt;- dlm(x = train$High, y = train$Low, q=1)
+summary(model.dl.opt)
+AIC(model.dl.opt)
+BIC(model.dl.opt)</code></pre>
+<p>Dari hasil diatas, didapat bahwa <span
+class="math inline"><em>P</em> − <em>v</em><em>a</em><em>l</em><em>u</em><em>e</em></span>
+dari intercept, <span
+class="math inline"><em>x</em><sub><em>t</em></sub></span> dan <span
+class="math inline"><em>x</em><sub><em>t</em> − 1</sub> &lt; 0.05</span>.
+Hal ini menunjukkan bahwa intercept, <span
+class="math inline"><em>x</em><sub><em>t</em></sub></span> dan <span
+class="math inline"><em>x</em><sub><em>t</em> − 1</sub></span>
+berpengaruh signifikan terhadap <span
+class="math inline"><em>y</em><sub><em>t</em></sub></span>. Adapun model
+keseluruhan yang terbentuk adalah sebagai berikut <span
+class="math display">$$
+\hat{Y_t}=0.10500+0.97659X_t+-0.01532X_{t-1}
+$$</span></p>
+<h3
+id="peramalan-dan-akurasi-model-distributed-lag-optimum-lag1">Peramalan
+dan akurasi model Distributed Lag optimum (lag=1)</h3>
+<pre class="{r}"><code># peramalan 42 periode kedepan
+frc.dl.opt &lt;- forecast(model = model.dl.opt, x=test$High, h=42)
+frc.dl.opt
+#akurasi data test
+mape.dl.opt &lt;- MAPE(frc.dl.opt$forecasts, test$Low)
+mape.dl.opt
+#akurasi data training
+GoF(model.dl.opt)</code></pre>
+<p>Model tersebut merupakan model yang sangat baik dengan nilai MAPE
+yang kurang dari 10%.</p>
+<h1 id="model-autoregressive">3. Model Autoregressive</h1>
+<h3 id="dengan-lag-p1-dan-q1">Dengan lag p=1 dan q=1</h3>
+<pre class="{r}"><code>model.ardl &lt;- ardlDlm(x = train$High, y = train$Low, p = 1 , q = 1)
+summary(model.ardl)
+AIC(model.ardl)
+BIC(model.ardl)</code></pre>
+<p>Hasil di atas menunjukkan bahwa peubah <span
+class="math inline"><em>i</em><em>n</em><em>t</em><em>e</em><em>r</em><em>c</em><em>e</em><em>p</em><em>t</em>, <em>x</em><sub><em>t</em></sub>, <em>y</em><sub><em>t</em> − 1</sub></span>,
+hasil uji t menunjukkan nilai-p pada peubah <span
+class="math inline"> &lt; 0.05</span> Hal ini menunjukkan bahwa peubah
+<span
+class="math inline"><em>i</em><em>n</em><em>t</em><em>e</em><em>r</em><em>c</em><em>e</em><em>p</em><em>t</em>, <em>x</em><sub><em>t</em></sub>, <em>y</em><sub><em>t</em> − 1</sub></span>
+berpengaruh signifikan terhadap <span
+class="math inline"><em>y</em><sub><em>t</em></sub></span>, sementara
+<span class="math inline"><em>x</em><sub><em>t</em> − 1</sub></span>
+tidak berpengaruh signifikan terhadap <span
+class="math inline"><em>y</em><sub><em>t</em></sub></span>. Model
+keseluruhannya adalah sebagai berikut:</p>
+<p><span
+class="math display"><em>Ŷ</em> = 0.10105 + 0.93039<em>X</em><sub><em>t</em></sub> − 0.13417<em>X</em><sub><em>t</em> − 1</sub> + 0.17065<em>Y</em><sub><em>t</em> − 1</sub></span></p>
+<h3
+id="peramalan-dan-akurasi-model-autoregressive-dengan-lag-p1-dan-q1">Peramalan
+dan akurasi model Autoregressive dengan lag (p=1 dan q=1)</h3>
+<pre class="{r}"><code># peramalan 42 periode kedepan
+frc.ardl &lt;- forecast(model = model.ardl, x=test$High, h=42)
+frc.ardl
+#akurasi data test
+mape.ardl &lt;- MAPE(frc.ardl$forecasts, test$Low)
+mape.ardl
+#akurasi data training
+GoF(model.ardl)</code></pre>
+<p>Berdasarkan akurasi di atas, terlihat bahwa nilai MAPE keduanya tidak
+jauh berbeda. Artinya, model regresi dengan distribusi lag ini
+tidak <code>overfitted</code> atau <code>underfitted</code></p>
+<h3 id="autoregressive-dengan-lag-optimum">Autoregressive dengan lag
+optimum</h3>
+<pre class="{r}"><code>#penentuan lag optimum
+model.ardl.opt &lt;- ardlBoundOrders(data = data.frame(data), ic = &quot;AIC&quot;, formula = Low ~ High )
+min_p=c()
+for(i in 1:6){
+  min_p[i]=min(model.ardl.opt$Stat.table[[i]])
+}
+q_opt=which(min_p==min(min_p, na.rm = TRUE))
+p_opt=which(model.ardl.opt$Stat.table[[q_opt]] == 
+              min(model.ardl.opt$Stat.table[[q_opt]], na.rm = TRUE))
+data.frame(&quot;q_optimum&quot; = q_opt, &quot;p_optimum&quot; = p_opt, 
+           &quot;AIC&quot;=model.ardl.opt$min.Stat)</code></pre>
+<p>Dari tabel di atas, dapat terlihat bahwa nilai AIC terendah didapat
+ketika <span class="math inline"><em>p</em> = 1</span> dan <span
+class="math inline"><em>q</em> = 1</span>, yaitu sebesar
+<code>-169.756</code>. Artinya, model autoregressive optimum didapat
+ketika <span class="math inline"><em>p</em> = 1</span> dan <span
+class="math inline"><em>q</em> = 1</span>.</p>
+<p>Selanjutnya dapat dilakukan pemodelan dengan nilai <span
+class="math inline"><em>p</em></span> dan <span
+class="math inline"><em>q</em></span> optimum seperti inisialisasi di
+langkah sebelumnya.</p>
+<h3 id="dengan-lag-optimum-p1-dan-q1">Dengan lag optimum (p=1 dan
+q=1)</h3>
+<pre class="{r}"><code>model.ardl.opt1 &lt;- ardlDlm(x = train$High, y = train$Low, p = 1 , q = 1)
+summary(model.ardl.opt1)
+AIC(model.ardl.opt1)
+BIC(model.ardl.opt1)</code></pre>
+<p>Hasil di atas menunjukkan bahwa peubah <span
+class="math inline"><em>i</em><em>n</em><em>t</em><em>e</em><em>r</em><em>c</em><em>e</em><em>p</em><em>t</em>, <em>x</em><sub><em>t</em></sub>, <em>x</em><sub><em>t</em> − 2</sub>, <em>y</em><sub><em>t</em> − 1</sub>, <em>y</em><sub><em>t</em> − 2</sub></span>,
+hasil uji t menunjukkan nilai-p pada peubah <span
+class="math inline"> &lt; 0.05</span> Hal ini menunjukkan bahwa peubah
+<span
+class="math inline"><em>i</em><em>n</em><em>t</em><em>e</em><em>r</em><em>c</em><em>e</em><em>p</em><em>t</em>, <em>x</em><sub><em>t</em></sub>, <em>x</em><sub><em>t</em> − 2</sub>, <em>y</em><sub><em>t</em> − 1</sub>, <em>y</em><sub><em>t</em> − 2</sub></span>
+berpengaruh signifikan terhadap <span
+class="math inline"><em>y</em><sub><em>t</em></sub></span>, sementara
+<span class="math inline"><em>x</em><sub><em>t</em> − 1</sub></span>
+tidak berpengaruh signifikan terhadap <span
+class="math inline"><em>y</em><sub><em>t</em></sub></span>. Model
+keseluruhannya adalah sebagai berikut:</p>
+<p><span
+class="math display"><em>Ŷ</em> = 0.10105 + 0.93039<em>X</em><sub><em>t</em></sub> − 0.13417<em>X</em><sub><em>t</em> − 1</sub> + 0.17065<em>Y</em><sub><em>t</em> − 1</sub></span></p>
+<h3
+id="peramalan-dan-akurasi-model-autoregressive-dengan-lag-optimum-p1-dan-q1">Peramalan
+dan akurasi model Autoregressive dengan lag optimum (p=1 dan q=1)</h3>
+<pre class="{r}"><code># peramalan 42 periode kedepan
+frc.ardl.opt &lt;- forecast(model = model.ardl.opt1, x=test$High, h=42)
+frc.ardl.opt
+#akurasi data test
+mape.ardl.opt &lt;- MAPE(frc.ardl.opt$forecasts, test$Low)
+mape.ardl.opt
+#akurasi data training
+GoF(model.ardl.opt1)</code></pre>
+<p>Berdasarkan akurasi di atas, terlihat bahwa nilai MAPE keduanya tidak
+jauh berbeda. Artinya, model regresi dengan distribusi lag ini
+tidak <code>overfitted</code> atau <code>underfitted</code></p>
+<h1 id="pemodelan-dlm-ardl-dengan-library-dynlm">Pemodelan DLM &amp;
+ARDL dengan Library <code>dynlm</code></h1>
+<pre class="{r}"><code>#sama dengan model dlm lag=3
+cons_lm1 &lt;- dynlm(Low ~ High+L(High)+L(High,2)+L(High,3),data = train.ts)
+summary(cons_lm1)
+#sama dengan dlm lag optimum (lag=1)
+cons_lm2 &lt;- dynlm(Low ~ High+L(High),data = train.ts)
+summary(cons_lm2)
+#sama dengan model ardl p=1 q=1
+cons_lm3 &lt;- dynlm(Low ~ High+L(High)+L(Low),data = train.ts)
+summary(cons_lm3)</code></pre>
+<h3 id="sse">SSE</h3>
+<pre class="{r}"><code>deviance(cons_lm1)
+deviance(cons_lm2)
+deviance(cons_lm3)</code></pre>
+<h3 id="autokorelasi">Autokorelasi</h3>
+<pre class="{r}"><code>#durbin watson
+dwtest(cons_lm1)
+dwtest(cons_lm2)
+dwtest(cons_lm3)</code></pre>
+<h4 id="heterogenitas">Heterogenitas</h4>
+<pre class="{r}"><code>bptest(cons_lm1)
+bptest(cons_lm2)
+bptest(cons_lm3)</code></pre>
+<h4 id="kenormalan">Kenormalan</h4>
+<pre class="{r}"><code>shapiro.test(residuals(cons_lm1))
+shapiro.test(residuals(cons_lm2))
+shapiro.test(residuals(cons_lm3))</code></pre>
+<h2 id="perbandingan-model">Perbandingan Model</h2>
+<pre class="{r}"><code>akurasi &lt;- matrix(c(mape.koyck, mape.dl, mape.dl.opt, mape.ardl))
+row.names(akurasi)&lt;- c(&quot;Koyck&quot;,&quot;DLM 1&quot;,&quot;DLM optimum&quot;,&quot;Autoregressive p=1,q=1&quot;)
+colnames(akurasi) &lt;- c(&quot;MAPE&quot;)
+akurasi</code></pre>
+<p>Berdasarkan nilai MAPE, model paling optimum didapat pada Model dlm
+optimum karena memiliki nilai MAPE yang terkecil.</p>
+<h1 id="plot-perbandingan-model">Plot perbandingan model</h1>
+<pre class="{r}"><code>par(mfrow=c(1,1))
+plot(test$High, test$Low, type=&quot;b&quot;, col=&quot;black&quot;)
+points(test$High, frc.koyck$forecasts,col=&quot;red&quot;)
+lines(test$High, frc.koyck$forecasts,col=&quot;red&quot;)
+points(test$High, frc.dl$forecasts,col=&quot;blue&quot;)
+lines(test$High, frc.dl$forecasts,col=&quot;blue&quot;)
+points(test$High, frc.dl.opt$forecasts,col=&quot;orange&quot;)
+lines(test$High, frc.dl.opt$forecasts,col=&quot;orange&quot;)
+points(test$High, frc.ardl$forecasts,col=&quot;green&quot;)
+lines(test$High, frc.ardl$forecasts,col=&quot;green&quot;)
+legend(&quot;topleft&quot;,c(&quot;aktual&quot;, &quot;Koyck&quot;,&quot;DLM 1&quot;,&quot;DLM optimum&quot;,&quot;Autoregressive p=1,q=1&quot;), lty=1, col=c(&quot;black&quot;,&quot;red&quot;,&quot;blue&quot;,&quot;orange&quot;,&quot;green&quot;), cex=0.5)</code></pre>
+<p>Berdasarkan plot tersebut, terlihat bahwa plot yang paling mendekati
+data aktualnya adalah Model dlm optimum, sehingga dapat disimpulkan
+model terbaik dalam hal ini adalah model regresi dlm optimum</p>
+</body>
+</html>
